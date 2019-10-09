@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"math/rand"
 
+	"github.com/vektah/gqlparser/gqlerror"
+
 	"github.com/sky0621/study-gqlgen/model"
 )
 
@@ -28,6 +30,20 @@ type mutationResolver struct{ *Resolver }
 
 // TODOを作成する。
 func (r *mutationResolver) CreateTodo(ctx context.Context, input NewTodo) (*model.Todo, error) {
+	if len(input.UserID) != 3 {
+		return nil, &gqlerror.Error{
+			Message: "length is only 3",
+			Locations: []gqlerror.Location{
+				{
+					Column: 1,
+					Line:   0,
+				},
+			},
+			Extensions: map[string]interface{}{
+				"error_code": "400-000-0001-00105-00000",
+			},
+		}
+	}
 	todo := &model.Todo{
 		ID:     fmt.Sprintf("T%d", rand.Int()),
 		Text:   input.Text,
