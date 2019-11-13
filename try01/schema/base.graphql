@@ -10,16 +10,21 @@ type User {
     name: String!
 }
 
+input NewTodo {
+    text: String!
+    userId: String!
+}
+
+# -----------------------------------------------
+# Query
 
 type Query {
     todos: [Todo!]!
 }
 
+# -----------------------------------------------
+# Command
+
 type Mutation {
     createTodo(input: NewTodo!): Todo!
-}
-
-input NewTodo {
-    text: String!
-    userId: String!
 }

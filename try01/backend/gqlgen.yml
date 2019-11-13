@@ -4,14 +4,11 @@
 # for detailed .gqlgen.yml documentation.
 
 schema:
-- schema.graphql
+- ../schema/*.graphql
 exec:
   filename: generated.go
 model:
   filename: models_gen.go
-models:
-  Todo:
-    model: github.com/sky0621/study-gqlgen/model.Todo
 resolver:
   filename: resolver.go
   type: Resolver
