@@ -1,8 +1,19 @@
+scalar Time
+scalar Map
+scalar Upload
+scalar Any
+scalar YesNo
+
 type Todo {
     id: ID!
     text: String!
     done: Boolean!
     user: User!
+    createdAt: Time!
+    option: Map
+    up: Upload
+    anyVal: Any
+    yn: YesNo
 }
 
 type User {
@@ -13,6 +24,11 @@ type User {
 input NewTodo {
     text: String!
     userId: String!
+    createdAt: Time!
+    option: Map
+    up: Upload
+    anyVal: Any
+    yn: YesNo
 }
 
 # -----------------------------------------------

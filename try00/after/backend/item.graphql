@@ -1,0 +1,16 @@
+extend type Query {
+    item(id: ID!): Item
+}
+
+extend type Mutation {
+    createItem(input: ItemInput!): ID!
+}
+
+type Item {
+    id: ID!
+    name: String!
+}
+
+input ItemInput {
+    name: String!
+}

@@ -2,16 +2,32 @@
 
 package backend
 
+import (
+	"time"
+
+	"github.com/99designs/gqlgen/graphql"
+)
+
 type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
+	Text      string                 `json:"text"`
+	UserID    string                 `json:"userId"`
+	CreatedAt time.Time              `json:"createdAt"`
+	Option    map[string]interface{} `json:"option"`
+	Up        *graphql.Upload        `json:"up"`
+	AnyVal    interface{}            `json:"anyVal"`
+	Yn        *YesNo                 `json:"yn"`
 }
 
 type Todo struct {
-	ID   string `json:"id"`
-	Text string `json:"text"`
-	Done bool   `json:"done"`
-	User *User  `json:"user"`
+	ID        string                 `json:"id"`
+	Text      string                 `json:"text"`
+	Done      bool                   `json:"done"`
+	User      *User                  `json:"user"`
+	CreatedAt time.Time              `json:"createdAt"`
+	Option    map[string]interface{} `json:"option"`
+	Up        *graphql.Upload        `json:"up"`
+	AnyVal    interface{}            `json:"anyVal"`
+	Yn        *YesNo                 `json:"yn"`
 }
 
 type User struct {
