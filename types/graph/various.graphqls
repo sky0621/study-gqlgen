@@ -1,0 +1,104 @@
+
+extend type Query {
+    nonNullTypes: [NonNullType!]!
+}
+
+"""
+https://graphql.org/learn/schema/#scalar-types
+https://github.com/99designs/gqlgen/blob/master/docs/content/reference/scalars.md
+"""
+type NonNullType implements Node {
+    "ID型 - ID!"
+    id: ID!
+
+    "UTF8文字列型 - String!"
+    strNonNull: String!
+
+    "符号付き32bit整数型 - Int!"
+    intNonNull: Int!
+
+    "符号付き倍精度浮動小数点数型 - Float!"
+    floatNonNull: Float!
+
+    "真偽値型 - Boolean!"
+    booleanNonNull: Boolean!
+
+    "日付型 - Date!"
+    dateNonNull: Date!
+
+    "列挙型 - Signal!"
+    signalNonNull: Signal!
+
+    "時刻型(gqlgenビルトイン) - Time!"
+    timeNonNull: Time!
+
+    "マップ型(gqlgenビルトイン) - Map!"
+    mapNonNull: Map!
+
+    "アップロード型(gqlgenビルトイン) - Upload!"
+    uploadNonNull: Upload!
+
+    "なんでもあり型(gqlgenビルトイン) - Any!"
+    anyNonNull: Any!
+
+    "Object構造型 - SomeType!"
+    someTypeNonNull: SomeType!
+
+    "Object構造型配列 - [SomeType!]!"
+    someTypesNonNull: [SomeType!]!
+
+    "カスタムScalar型 - CustomScalar!"
+    customScalarNonNull: CustomScalar!
+}
+
+type NullableType implements Node {
+    "ID型 - ID!"
+    id: ID!
+
+    "UTF8文字列型 - String"
+    strNullable: String
+
+    "符号付き32bit整数型 - Int"
+    intNullable: Int
+
+    "符号付き倍精度浮動小数点数型 - Float"
+    floatNullable: Float
+
+    "真偽値型 - Boolean"
+    booleanNullable: Boolean
+
+    "日付型 - Date"
+    dateNullable: Date
+
+    "列挙型 - Signal"
+    signalNullable: Signal
+
+    "時刻型(gqlgenビルトイン) - Time"
+    timeNullable: Time
+
+    "マップ型(gqlgenビルトイン) - Map"
+    mapNullable: Map
+
+    "アップロード型(gqlgenビルトイン) - Upload"
+    uploadNullable: Upload
+
+    "なんでもあり型(gqlgenビルトイン) - Any"
+    anyNullable: Any
+
+    "Object構造型 - SomeType"
+    someTypeNullable: SomeType
+
+    "Object構造型配列 - [SomeType!]"
+    someTypesArrayNullable: [SomeType!]
+    "Object構造型配列 - [SomeType]!"
+    someTypesObjectNullable: [SomeType]!
+    "Object構造型配列 - [SomeType]"
+    someTypesNullable: [SomeType]
+
+    "カスタムScalar型 - CustomScalar"
+    customScalarNullable: CustomScalar
+}
+
+type SomeType implements Node {
+    id: ID!
+}

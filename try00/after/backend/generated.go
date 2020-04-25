@@ -281,7 +281,7 @@ input ItemInput {
     name: String!
 }
 `},
-	&ast.Source{Name: "schema.graphql", Input: `schema {
+	&ast.Source{Name: "schema.graphqls", Input: `schema {
     query: Query
     mutation: Mutation
 }

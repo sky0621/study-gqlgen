@@ -1,0 +1,48 @@
+# Global Object Identification ... 全データを共通のIDでユニーク化
+interface Node {
+  id: ID!
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Query {
+  node(id: ID!): Node
+}
+
+type Mutation {
+  noop(input: NoopInput): NoopPayload
+}
+
+input NoopInput {
+  clientMutationId: String
+}
+
+type NoopPayload {
+  clientMutationId: String
+}
+
+type MutationResponse {
+  id: ID
+}
+
+scalar Date
+scalar Time
+scalar Map
+scalar Upload
+scalar Any
+scalar CustomScalar
+
+enum Signal {
+  RED
+  YELLOW
+  GREEN
+}
+
+enum Unit {
+  KM
+  M
+  CM
+}
