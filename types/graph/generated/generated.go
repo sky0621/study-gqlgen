@@ -494,12 +494,6 @@ enum Signal {
   YELLOW
   GREEN
 }
-
-enum Unit {
-  KM
-  M
-  CM
-}
 `, BuiltIn: false},
 	&ast.Source{Name: "graph/various.graphqls", Input: `
 extend type Query {

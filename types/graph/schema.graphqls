@@ -40,9 +40,3 @@ enum Signal {
   YELLOW
   GREEN
 }
-
-enum Unit {
-  KM
-  M
-  CM
-}
