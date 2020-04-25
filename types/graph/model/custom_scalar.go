@@ -1,28 +1,36 @@
 package model
 
 import (
-	"errors"
 	"fmt"
 	"io"
 )
 
-type CustomScalar struct {
-	str string
-}
+type YesNo bool
 
 // UnmarshalGQL implements the graphql.Unmarshaler interface
-func (s *CustomScalar) UnmarshalGQL(v interface{}) error {
-	str, ok := v.(string)
+func (y *YesNo) UnmarshalGQL(v interface{}) error {
+	yes, ok := v.(string)
 	if !ok {
-		return errors.New("no target")
+		return fmt.Errorf("points must be strings")
 	}
-	s.str = str
+
+	if yes == "yes" {
+		*y = true
+	} else {
+		*y = false
+	}
 	return nil
 }
 
 // MarshalGQL implements the graphql.Marshaler interface
-func (s *CustomScalar) MarshalGQL(w io.Writer) {
-	if _, err := w.Write([]byte(s.str)); err != nil {
-		fmt.Println(err)
+func (y YesNo) MarshalGQL(w io.Writer) {
+	if y {
+		if _, err := w.Write([]byte(`"yes"`)); err != nil {
+			fmt.Println(err)
+		}
+	} else {
+		if _, err := w.Write([]byte(`"no"`)); err != nil {
+			fmt.Println(err)
+		}
 	}
 }

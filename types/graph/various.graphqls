@@ -1,6 +1,7 @@
 
 extend type Query {
     nonNullTypes: [NonNullType!]!
+    nullableTypes: [NullableType!]!
 }
 
 """
@@ -12,7 +13,7 @@ type NonNullType implements Node {
     id: ID!
 
     "UTF8文字列型 - String!"
-    strNonNull: String!
+    stringNonNull: String!
 
     "符号付き32bit整数型 - Int!"
     intNonNull: Int!
@@ -41,14 +42,23 @@ type NonNullType implements Node {
     "なんでもあり型(gqlgenビルトイン) - Any!"
     anyNonNull: Any!
 
+    "カスタムScalar型 - YesNo!"
+    yesNoNonNull: YesNo!
+
     "Object構造型 - SomeType!"
-    someTypeNonNull: SomeType!
+    objectNonNull: Object!
+
+    "文字列型配列 - [String!]!"
+    stringsNonNull: [String!]!
+
+    "マップ型配列 - [Map!]!"
+    mapsNonNull: [Map!]!
+
+    "なんでもあり型配列 - [Any!]!"
+    anyTypesNonNull: [Any!]!
 
     "Object構造型配列 - [SomeType!]!"
-    someTypesNonNull: [SomeType!]!
-
-    "カスタムScalar型 - CustomScalar!"
-    customScalarNonNull: CustomScalar!
+    objectsNonNull: [Object!]!
 }
 
 type NullableType implements Node {
@@ -56,7 +66,7 @@ type NullableType implements Node {
     id: ID!
 
     "UTF8文字列型 - String"
-    strNullable: String
+    stringNullable: String
 
     "符号付き32bit整数型 - Int"
     intNullable: Int
@@ -85,20 +95,41 @@ type NullableType implements Node {
     "なんでもあり型(gqlgenビルトイン) - Any"
     anyNullable: Any
 
+    "カスタムScalar型 - YesNo"
+    yesNoNullable: YesNo
+
     "Object構造型 - SomeType"
-    someTypeNullable: SomeType
+    objectNullable: Object
 
-    "Object構造型配列 - [SomeType!]"
-    someTypesArrayNullable: [SomeType!]
-    "Object構造型配列 - [SomeType]!"
-    someTypesObjectNullable: [SomeType]!
+    "文字列型配列 - [String]"
+    stringsNullable: [String]
+    "文字列型配列 - [String]!"
+    stringsObjectNullable: [String]!
+    "文字列型配列 - [String!]"
+    stringsArrayNullable: [String!]
+
+    "マップ型配列 - [Map]"
+    mapsNullable: [Map]
+    "マップ型配列 - [Map]!"
+    mapsObjectNullable: [Map]!
+    "マップ型配列 - [Map!]"
+    mapsArrayNullable: [Map!]
+
+    "なんでもあり型配列 - [Any]"
+    anyTypesNullable: [Any]
+    "なんでもあり型配列 - [Any]!"
+    anyTypesObjectNullable: [Any]!
+    "なんでもあり型配列 - [Any!]"
+    anyTypesArrayNullable: [Any!]
+
     "Object構造型配列 - [SomeType]"
-    someTypesNullable: [SomeType]
-
-    "カスタムScalar型 - CustomScalar"
-    customScalarNullable: CustomScalar
+    objectsNullable: [Object]
+    "Object構造型配列 - [SomeType]!"
+    objectsObjectNullable: [Object]!
+    "Object構造型配列 - [SomeType!]"
+    objectsArrayNullable: [Object!]
 }
 
-type SomeType implements Node {
+type Object implements Node {
     id: ID!
 }

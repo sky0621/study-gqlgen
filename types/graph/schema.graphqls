@@ -33,7 +33,7 @@ scalar Time
 scalar Map
 scalar Upload
 scalar Any
-scalar CustomScalar
+scalar YesNo
 
 enum Signal {
   RED

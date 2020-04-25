@@ -25,7 +25,7 @@ type NonNullType struct {
 	// ID型 - ID!
 	ID string `json:"id"`
 	// UTF8文字列型 - String!
-	StrNonNull string `json:"strNonNull"`
+	StringNonNull string `json:"stringNonNull"`
 	// 符号付き32bit整数型 - Int!
 	IntNonNull int `json:"intNonNull"`
 	// 符号付き倍精度浮動小数点数型 - Float!
@@ -44,12 +44,18 @@ type NonNullType struct {
 	UploadNonNull graphql.Upload `json:"uploadNonNull"`
 	// なんでもあり型(gqlgenビルトイン) - Any!
 	AnyNonNull interface{} `json:"anyNonNull"`
+	// カスタムScalar型 - YesNo!
+	YesNoNonNull YesNo `json:"yesNoNonNull"`
 	// Object構造型 - SomeType!
-	SomeTypeNonNull *SomeType `json:"someTypeNonNull"`
+	ObjectNonNull *Object `json:"objectNonNull"`
+	// 文字列型配列 - [String!]!
+	StringsNonNull []string `json:"stringsNonNull"`
+	// マップ型配列 - [Map!]!
+	MapsNonNull []map[string]interface{} `json:"mapsNonNull"`
+	// なんでもあり型配列 - [Any!]!
+	AnyTypesNonNull []interface{} `json:"anyTypesNonNull"`
 	// Object構造型配列 - [SomeType!]!
-	SomeTypesNonNull []*SomeType `json:"someTypesNonNull"`
-	// カスタムScalar型 - CustomScalar!
-	CustomScalarNonNull CustomScalar `json:"customScalarNonNull"`
+	ObjectsNonNull []*Object `json:"objectsNonNull"`
 }
 
 func (NonNullType) IsNode() {}
@@ -66,7 +72,7 @@ type NullableType struct {
 	// ID型 - ID!
 	ID string `json:"id"`
 	// UTF8文字列型 - String
-	StrNullable *string `json:"strNullable"`
+	StringNullable *string `json:"stringNullable"`
 	// 符号付き32bit整数型 - Int
 	IntNullable *int `json:"intNullable"`
 	// 符号付き倍精度浮動小数点数型 - Float
@@ -85,25 +91,43 @@ type NullableType struct {
 	UploadNullable *graphql.Upload `json:"uploadNullable"`
 	// なんでもあり型(gqlgenビルトイン) - Any
 	AnyNullable interface{} `json:"anyNullable"`
+	// カスタムScalar型 - YesNo
+	YesNoNullable *YesNo `json:"yesNoNullable"`
 	// Object構造型 - SomeType
-	SomeTypeNullable *SomeType `json:"someTypeNullable"`
-	// Object構造型配列 - [SomeType!]
-	SomeTypesArrayNullable []*SomeType `json:"someTypesArrayNullable"`
-	// Object構造型配列 - [SomeType]!
-	SomeTypesObjectNullable []*SomeType `json:"someTypesObjectNullable"`
+	ObjectNullable *Object `json:"objectNullable"`
+	// 文字列型配列 - [String]
+	StringsNullable []*string `json:"stringsNullable"`
+	// 文字列型配列 - [String]!
+	StringsObjectNullable []*string `json:"stringsObjectNullable"`
+	// 文字列型配列 - [String!]
+	StringsArrayNullable []string `json:"stringsArrayNullable"`
+	// マップ型配列 - [Map]
+	MapsNullable []map[string]interface{} `json:"mapsNullable"`
+	// マップ型配列 - [Map]!
+	MapsObjectNullable []map[string]interface{} `json:"mapsObjectNullable"`
+	// マップ型配列 - [Map!]
+	MapsArrayNullable []map[string]interface{} `json:"mapsArrayNullable"`
+	// なんでもあり型配列 - [Any]
+	AnyTypesNullable []interface{} `json:"anyTypesNullable"`
+	// なんでもあり型配列 - [Any]!
+	AnyTypesObjectNullable []interface{} `json:"anyTypesObjectNullable"`
+	// なんでもあり型配列 - [Any!]
+	AnyTypesArrayNullable []interface{} `json:"anyTypesArrayNullable"`
 	// Object構造型配列 - [SomeType]
-	SomeTypesNullable []*SomeType `json:"someTypesNullable"`
-	// カスタムScalar型 - CustomScalar
-	CustomScalarNullable *CustomScalar `json:"customScalarNullable"`
+	ObjectsNullable []*Object `json:"objectsNullable"`
+	// Object構造型配列 - [SomeType]!
+	ObjectsObjectNullable []*Object `json:"objectsObjectNullable"`
+	// Object構造型配列 - [SomeType!]
+	ObjectsArrayNullable []*Object `json:"objectsArrayNullable"`
 }
 
 func (NullableType) IsNode() {}
 
-type SomeType struct {
+type Object struct {
 	ID string `json:"id"`
 }
 
-func (SomeType) IsNode() {}
+func (Object) IsNode() {}
 
 type Signal string
 

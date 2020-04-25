@@ -54,6 +54,6 @@ models:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
-  CustomScalar:
+  YesNo:
     model:
-      - github.com/sky0621/study-gqlgen/types/graph/model.CustomScalar
+      - github.com/sky0621/study-gqlgen/types/graph/model.YesNo

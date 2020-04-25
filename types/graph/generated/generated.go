@@ -54,20 +54,23 @@ type ComplexityRoot struct {
 	}
 
 	NonNullType struct {
-		AnyNonNull          func(childComplexity int) int
-		BooleanNonNull      func(childComplexity int) int
-		CustomScalarNonNull func(childComplexity int) int
-		DateNonNull         func(childComplexity int) int
-		FloatNonNull        func(childComplexity int) int
-		ID                  func(childComplexity int) int
-		IntNonNull          func(childComplexity int) int
-		MapNonNull          func(childComplexity int) int
-		SignalNonNull       func(childComplexity int) int
-		SomeTypeNonNull     func(childComplexity int) int
-		SomeTypesNonNull    func(childComplexity int) int
-		StrNonNull          func(childComplexity int) int
-		TimeNonNull         func(childComplexity int) int
-		UploadNonNull       func(childComplexity int) int
+		AnyNonNull      func(childComplexity int) int
+		AnyTypesNonNull func(childComplexity int) int
+		BooleanNonNull  func(childComplexity int) int
+		DateNonNull     func(childComplexity int) int
+		FloatNonNull    func(childComplexity int) int
+		ID              func(childComplexity int) int
+		IntNonNull      func(childComplexity int) int
+		MapNonNull      func(childComplexity int) int
+		MapsNonNull     func(childComplexity int) int
+		ObjectNonNull   func(childComplexity int) int
+		ObjectsNonNull  func(childComplexity int) int
+		SignalNonNull   func(childComplexity int) int
+		StringNonNull   func(childComplexity int) int
+		StringsNonNull  func(childComplexity int) int
+		TimeNonNull     func(childComplexity int) int
+		UploadNonNull   func(childComplexity int) int
+		YesNoNonNull    func(childComplexity int) int
 	}
 
 	NoopPayload struct {
@@ -75,31 +78,41 @@ type ComplexityRoot struct {
 	}
 
 	NullableType struct {
-		AnyNullable             func(childComplexity int) int
-		BooleanNullable         func(childComplexity int) int
-		CustomScalarNullable    func(childComplexity int) int
-		DateNullable            func(childComplexity int) int
-		FloatNullable           func(childComplexity int) int
-		ID                      func(childComplexity int) int
-		IntNullable             func(childComplexity int) int
-		MapNullable             func(childComplexity int) int
-		SignalNullable          func(childComplexity int) int
-		SomeTypeNullable        func(childComplexity int) int
-		SomeTypesArrayNullable  func(childComplexity int) int
-		SomeTypesNullable       func(childComplexity int) int
-		SomeTypesObjectNullable func(childComplexity int) int
-		StrNullable             func(childComplexity int) int
-		TimeNullable            func(childComplexity int) int
-		UploadNullable          func(childComplexity int) int
+		AnyNullable            func(childComplexity int) int
+		AnyTypesArrayNullable  func(childComplexity int) int
+		AnyTypesNullable       func(childComplexity int) int
+		AnyTypesObjectNullable func(childComplexity int) int
+		BooleanNullable        func(childComplexity int) int
+		DateNullable           func(childComplexity int) int
+		FloatNullable          func(childComplexity int) int
+		ID                     func(childComplexity int) int
+		IntNullable            func(childComplexity int) int
+		MapNullable            func(childComplexity int) int
+		MapsArrayNullable      func(childComplexity int) int
+		MapsNullable           func(childComplexity int) int
+		MapsObjectNullable     func(childComplexity int) int
+		ObjectNullable         func(childComplexity int) int
+		ObjectsArrayNullable   func(childComplexity int) int
+		ObjectsNullable        func(childComplexity int) int
+		ObjectsObjectNullable  func(childComplexity int) int
+		SignalNullable         func(childComplexity int) int
+		StringNullable         func(childComplexity int) int
+		StringsArrayNullable   func(childComplexity int) int
+		StringsNullable        func(childComplexity int) int
+		StringsObjectNullable  func(childComplexity int) int
+		TimeNullable           func(childComplexity int) int
+		UploadNullable         func(childComplexity int) int
+		YesNoNullable          func(childComplexity int) int
+	}
+
+	Object struct {
+		ID func(childComplexity int) int
 	}
 
 	Query struct {
-		Node         func(childComplexity int, id string) int
-		NonNullTypes func(childComplexity int) int
-	}
-
-	SomeType struct {
-		ID func(childComplexity int) int
+		Node          func(childComplexity int, id string) int
+		NonNullTypes  func(childComplexity int) int
+		NullableTypes func(childComplexity int) int
 	}
 }
 
@@ -109,6 +122,7 @@ type MutationResolver interface {
 type QueryResolver interface {
 	Node(ctx context.Context, id string) (model.Node, error)
 	NonNullTypes(ctx context.Context) ([]*model.NonNullType, error)
+	NullableTypes(ctx context.Context) ([]*model.NullableType, error)
 }
 
 type executableSchema struct {
@@ -152,19 +166,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.NonNullType.AnyNonNull(childComplexity), true
 
+	case "NonNullType.anyTypesNonNull":
+		if e.complexity.NonNullType.AnyTypesNonNull == nil {
+			break
+		}
+
+		return e.complexity.NonNullType.AnyTypesNonNull(childComplexity), true
+
 	case "NonNullType.booleanNonNull":
 		if e.complexity.NonNullType.BooleanNonNull == nil {
 			break
 		}
 
 		return e.complexity.NonNullType.BooleanNonNull(childComplexity), true
-
-	case "NonNullType.customScalarNonNull":
-		if e.complexity.NonNullType.CustomScalarNonNull == nil {
-			break
-		}
-
-		return e.complexity.NonNullType.CustomScalarNonNull(childComplexity), true
 
 	case "NonNullType.dateNonNull":
 		if e.complexity.NonNullType.DateNonNull == nil {
@@ -201,6 +215,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.NonNullType.MapNonNull(childComplexity), true
 
+	case "NonNullType.mapsNonNull":
+		if e.complexity.NonNullType.MapsNonNull == nil {
+			break
+		}
+
+		return e.complexity.NonNullType.MapsNonNull(childComplexity), true
+
+	case "NonNullType.objectNonNull":
+		if e.complexity.NonNullType.ObjectNonNull == nil {
+			break
+		}
+
+		return e.complexity.NonNullType.ObjectNonNull(childComplexity), true
+
+	case "NonNullType.objectsNonNull":
+		if e.complexity.NonNullType.ObjectsNonNull == nil {
+			break
+		}
+
+		return e.complexity.NonNullType.ObjectsNonNull(childComplexity), true
+
 	case "NonNullType.signalNonNull":
 		if e.complexity.NonNullType.SignalNonNull == nil {
 			break
@@ -208,26 +243,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.NonNullType.SignalNonNull(childComplexity), true
 
-	case "NonNullType.someTypeNonNull":
-		if e.complexity.NonNullType.SomeTypeNonNull == nil {
+	case "NonNullType.stringNonNull":
+		if e.complexity.NonNullType.StringNonNull == nil {
 			break
 		}
 
-		return e.complexity.NonNullType.SomeTypeNonNull(childComplexity), true
+		return e.complexity.NonNullType.StringNonNull(childComplexity), true
 
-	case "NonNullType.someTypesNonNull":
-		if e.complexity.NonNullType.SomeTypesNonNull == nil {
+	case "NonNullType.stringsNonNull":
+		if e.complexity.NonNullType.StringsNonNull == nil {
 			break
 		}
 
-		return e.complexity.NonNullType.SomeTypesNonNull(childComplexity), true
-
-	case "NonNullType.strNonNull":
-		if e.complexity.NonNullType.StrNonNull == nil {
-			break
-		}
-
-		return e.complexity.NonNullType.StrNonNull(childComplexity), true
+		return e.complexity.NonNullType.StringsNonNull(childComplexity), true
 
 	case "NonNullType.timeNonNull":
 		if e.complexity.NonNullType.TimeNonNull == nil {
@@ -243,6 +271,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.NonNullType.UploadNonNull(childComplexity), true
 
+	case "NonNullType.yesNoNonNull":
+		if e.complexity.NonNullType.YesNoNonNull == nil {
+			break
+		}
+
+		return e.complexity.NonNullType.YesNoNonNull(childComplexity), true
+
 	case "NoopPayload.clientMutationId":
 		if e.complexity.NoopPayload.ClientMutationID == nil {
 			break
@@ -257,19 +292,33 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.NullableType.AnyNullable(childComplexity), true
 
+	case "NullableType.anyTypesArrayNullable":
+		if e.complexity.NullableType.AnyTypesArrayNullable == nil {
+			break
+		}
+
+		return e.complexity.NullableType.AnyTypesArrayNullable(childComplexity), true
+
+	case "NullableType.anyTypesNullable":
+		if e.complexity.NullableType.AnyTypesNullable == nil {
+			break
+		}
+
+		return e.complexity.NullableType.AnyTypesNullable(childComplexity), true
+
+	case "NullableType.anyTypesObjectNullable":
+		if e.complexity.NullableType.AnyTypesObjectNullable == nil {
+			break
+		}
+
+		return e.complexity.NullableType.AnyTypesObjectNullable(childComplexity), true
+
 	case "NullableType.booleanNullable":
 		if e.complexity.NullableType.BooleanNullable == nil {
 			break
 		}
 
 		return e.complexity.NullableType.BooleanNullable(childComplexity), true
-
-	case "NullableType.customScalarNullable":
-		if e.complexity.NullableType.CustomScalarNullable == nil {
-			break
-		}
-
-		return e.complexity.NullableType.CustomScalarNullable(childComplexity), true
 
 	case "NullableType.dateNullable":
 		if e.complexity.NullableType.DateNullable == nil {
@@ -306,6 +355,55 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.NullableType.MapNullable(childComplexity), true
 
+	case "NullableType.mapsArrayNullable":
+		if e.complexity.NullableType.MapsArrayNullable == nil {
+			break
+		}
+
+		return e.complexity.NullableType.MapsArrayNullable(childComplexity), true
+
+	case "NullableType.mapsNullable":
+		if e.complexity.NullableType.MapsNullable == nil {
+			break
+		}
+
+		return e.complexity.NullableType.MapsNullable(childComplexity), true
+
+	case "NullableType.mapsObjectNullable":
+		if e.complexity.NullableType.MapsObjectNullable == nil {
+			break
+		}
+
+		return e.complexity.NullableType.MapsObjectNullable(childComplexity), true
+
+	case "NullableType.objectNullable":
+		if e.complexity.NullableType.ObjectNullable == nil {
+			break
+		}
+
+		return e.complexity.NullableType.ObjectNullable(childComplexity), true
+
+	case "NullableType.objectsArrayNullable":
+		if e.complexity.NullableType.ObjectsArrayNullable == nil {
+			break
+		}
+
+		return e.complexity.NullableType.ObjectsArrayNullable(childComplexity), true
+
+	case "NullableType.objectsNullable":
+		if e.complexity.NullableType.ObjectsNullable == nil {
+			break
+		}
+
+		return e.complexity.NullableType.ObjectsNullable(childComplexity), true
+
+	case "NullableType.objectsObjectNullable":
+		if e.complexity.NullableType.ObjectsObjectNullable == nil {
+			break
+		}
+
+		return e.complexity.NullableType.ObjectsObjectNullable(childComplexity), true
+
 	case "NullableType.signalNullable":
 		if e.complexity.NullableType.SignalNullable == nil {
 			break
@@ -313,40 +411,33 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.NullableType.SignalNullable(childComplexity), true
 
-	case "NullableType.someTypeNullable":
-		if e.complexity.NullableType.SomeTypeNullable == nil {
+	case "NullableType.stringNullable":
+		if e.complexity.NullableType.StringNullable == nil {
 			break
 		}
 
-		return e.complexity.NullableType.SomeTypeNullable(childComplexity), true
+		return e.complexity.NullableType.StringNullable(childComplexity), true
 
-	case "NullableType.someTypesArrayNullable":
-		if e.complexity.NullableType.SomeTypesArrayNullable == nil {
+	case "NullableType.stringsArrayNullable":
+		if e.complexity.NullableType.StringsArrayNullable == nil {
 			break
 		}
 
-		return e.complexity.NullableType.SomeTypesArrayNullable(childComplexity), true
+		return e.complexity.NullableType.StringsArrayNullable(childComplexity), true
 
-	case "NullableType.someTypesNullable":
-		if e.complexity.NullableType.SomeTypesNullable == nil {
+	case "NullableType.stringsNullable":
+		if e.complexity.NullableType.StringsNullable == nil {
 			break
 		}
 
-		return e.complexity.NullableType.SomeTypesNullable(childComplexity), true
+		return e.complexity.NullableType.StringsNullable(childComplexity), true
 
-	case "NullableType.someTypesObjectNullable":
-		if e.complexity.NullableType.SomeTypesObjectNullable == nil {
+	case "NullableType.stringsObjectNullable":
+		if e.complexity.NullableType.StringsObjectNullable == nil {
 			break
 		}
 
-		return e.complexity.NullableType.SomeTypesObjectNullable(childComplexity), true
-
-	case "NullableType.strNullable":
-		if e.complexity.NullableType.StrNullable == nil {
-			break
-		}
-
-		return e.complexity.NullableType.StrNullable(childComplexity), true
+		return e.complexity.NullableType.StringsObjectNullable(childComplexity), true
 
 	case "NullableType.timeNullable":
 		if e.complexity.NullableType.TimeNullable == nil {
@@ -361,6 +452,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.NullableType.UploadNullable(childComplexity), true
+
+	case "NullableType.yesNoNullable":
+		if e.complexity.NullableType.YesNoNullable == nil {
+			break
+		}
+
+		return e.complexity.NullableType.YesNoNullable(childComplexity), true
+
+	case "Object.id":
+		if e.complexity.Object.ID == nil {
+			break
+		}
+
+		return e.complexity.Object.ID(childComplexity), true
 
 	case "Query.node":
 		if e.complexity.Query.Node == nil {
@@ -381,12 +486,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.NonNullTypes(childComplexity), true
 
-	case "SomeType.id":
-		if e.complexity.SomeType.ID == nil {
+	case "Query.nullableTypes":
+		if e.complexity.Query.NullableTypes == nil {
 			break
 		}
 
-		return e.complexity.SomeType.ID(childComplexity), true
+		return e.complexity.Query.NullableTypes(childComplexity), true
 
 	}
 	return 0, false
@@ -487,7 +592,7 @@ scalar Time
 scalar Map
 scalar Upload
 scalar Any
-scalar CustomScalar
+scalar YesNo
 
 enum Signal {
   RED
@@ -498,6 +603,7 @@ enum Signal {
 	&ast.Source{Name: "graph/various.graphqls", Input: `
 extend type Query {
     nonNullTypes: [NonNullType!]!
+    nullableTypes: [NullableType!]!
 }
 
 """
@@ -509,7 +615,7 @@ type NonNullType implements Node {
     id: ID!
 
     "UTF8文字列型 - String!"
-    strNonNull: String!
+    stringNonNull: String!
 
     "符号付き32bit整数型 - Int!"
     intNonNull: Int!
@@ -538,14 +644,23 @@ type NonNullType implements Node {
     "なんでもあり型(gqlgenビルトイン) - Any!"
     anyNonNull: Any!
 
+    "カスタムScalar型 - YesNo!"
+    yesNoNonNull: YesNo!
+
     "Object構造型 - SomeType!"
-    someTypeNonNull: SomeType!
+    objectNonNull: Object!
+
+    "文字列型配列 - [String!]!"
+    stringsNonNull: [String!]!
+
+    "マップ型配列 - [Map!]!"
+    mapsNonNull: [Map!]!
+
+    "なんでもあり型配列 - [Any!]!"
+    anyTypesNonNull: [Any!]!
 
     "Object構造型配列 - [SomeType!]!"
-    someTypesNonNull: [SomeType!]!
-
-    "カスタムScalar型 - CustomScalar!"
-    customScalarNonNull: CustomScalar!
+    objectsNonNull: [Object!]!
 }
 
 type NullableType implements Node {
@@ -553,7 +668,7 @@ type NullableType implements Node {
     id: ID!
 
     "UTF8文字列型 - String"
-    strNullable: String
+    stringNullable: String
 
     "符号付き32bit整数型 - Int"
     intNullable: Int
@@ -582,21 +697,42 @@ type NullableType implements Node {
     "なんでもあり型(gqlgenビルトイン) - Any"
     anyNullable: Any
 
+    "カスタムScalar型 - YesNo"
+    yesNoNullable: YesNo
+
     "Object構造型 - SomeType"
-    someTypeNullable: SomeType
+    objectNullable: Object
 
-    "Object構造型配列 - [SomeType!]"
-    someTypesArrayNullable: [SomeType!]
-    "Object構造型配列 - [SomeType]!"
-    someTypesObjectNullable: [SomeType]!
+    "文字列型配列 - [String]"
+    stringsNullable: [String]
+    "文字列型配列 - [String]!"
+    stringsObjectNullable: [String]!
+    "文字列型配列 - [String!]"
+    stringsArrayNullable: [String!]
+
+    "マップ型配列 - [Map]"
+    mapsNullable: [Map]
+    "マップ型配列 - [Map]!"
+    mapsObjectNullable: [Map]!
+    "マップ型配列 - [Map!]"
+    mapsArrayNullable: [Map!]
+
+    "なんでもあり型配列 - [Any]"
+    anyTypesNullable: [Any]
+    "なんでもあり型配列 - [Any]!"
+    anyTypesObjectNullable: [Any]!
+    "なんでもあり型配列 - [Any!]"
+    anyTypesArrayNullable: [Any!]
+
     "Object構造型配列 - [SomeType]"
-    someTypesNullable: [SomeType]
-
-    "カスタムScalar型 - CustomScalar"
-    customScalarNullable: CustomScalar
+    objectsNullable: [Object]
+    "Object構造型配列 - [SomeType]!"
+    objectsObjectNullable: [Object]!
+    "Object構造型配列 - [SomeType!]"
+    objectsArrayNullable: [Object!]
 }
 
-type SomeType implements Node {
+type Object implements Node {
     id: ID!
 }`, BuiltIn: false},
 }
@@ -787,7 +923,7 @@ func (ec *executionContext) _NonNullType_id(ctx context.Context, field graphql.C
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _NonNullType_strNonNull(ctx context.Context, field graphql.CollectedField, obj *model.NonNullType) (ret graphql.Marshaler) {
+func (ec *executionContext) _NonNullType_stringNonNull(ctx context.Context, field graphql.CollectedField, obj *model.NonNullType) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -804,7 +940,7 @@ func (ec *executionContext) _NonNullType_strNonNull(ctx context.Context, field g
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.StrNonNull, nil
+		return obj.StringNonNull, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1127,7 +1263,7 @@ func (ec *executionContext) _NonNullType_anyNonNull(ctx context.Context, field g
 	return ec.marshalNAny2interface(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _NonNullType_someTypeNonNull(ctx context.Context, field graphql.CollectedField, obj *model.NonNullType) (ret graphql.Marshaler) {
+func (ec *executionContext) _NonNullType_yesNoNonNull(ctx context.Context, field graphql.CollectedField, obj *model.NonNullType) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1144,7 +1280,7 @@ func (ec *executionContext) _NonNullType_someTypeNonNull(ctx context.Context, fi
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SomeTypeNonNull, nil
+		return obj.YesNoNonNull, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1156,12 +1292,12 @@ func (ec *executionContext) _NonNullType_someTypeNonNull(ctx context.Context, fi
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.SomeType)
+	res := resTmp.(model.YesNo)
 	fc.Result = res
-	return ec.marshalNSomeType2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSomeType(ctx, field.Selections, res)
+	return ec.marshalNYesNo2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐYesNo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _NonNullType_someTypesNonNull(ctx context.Context, field graphql.CollectedField, obj *model.NonNullType) (ret graphql.Marshaler) {
+func (ec *executionContext) _NonNullType_objectNonNull(ctx context.Context, field graphql.CollectedField, obj *model.NonNullType) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1178,7 +1314,7 @@ func (ec *executionContext) _NonNullType_someTypesNonNull(ctx context.Context, f
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SomeTypesNonNull, nil
+		return obj.ObjectNonNull, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1190,12 +1326,12 @@ func (ec *executionContext) _NonNullType_someTypesNonNull(ctx context.Context, f
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.SomeType)
+	res := resTmp.(*model.Object)
 	fc.Result = res
-	return ec.marshalNSomeType2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSomeTypeᚄ(ctx, field.Selections, res)
+	return ec.marshalNObject2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐObject(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _NonNullType_customScalarNonNull(ctx context.Context, field graphql.CollectedField, obj *model.NonNullType) (ret graphql.Marshaler) {
+func (ec *executionContext) _NonNullType_stringsNonNull(ctx context.Context, field graphql.CollectedField, obj *model.NonNullType) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1212,7 +1348,7 @@ func (ec *executionContext) _NonNullType_customScalarNonNull(ctx context.Context
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.CustomScalarNonNull, nil
+		return obj.StringsNonNull, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1224,9 +1360,111 @@ func (ec *executionContext) _NonNullType_customScalarNonNull(ctx context.Context
 		}
 		return graphql.Null
 	}
-	res := resTmp.(model.CustomScalar)
+	res := resTmp.([]string)
 	fc.Result = res
-	return ec.marshalNCustomScalar2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐCustomScalar(ctx, field.Selections, res)
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NonNullType_mapsNonNull(ctx context.Context, field graphql.CollectedField, obj *model.NonNullType) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "NonNullType",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MapsNonNull, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]map[string]interface{})
+	fc.Result = res
+	return ec.marshalNMap2ᚕmapᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NonNullType_anyTypesNonNull(ctx context.Context, field graphql.CollectedField, obj *model.NonNullType) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "NonNullType",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AnyTypesNonNull, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]interface{})
+	fc.Result = res
+	return ec.marshalNAny2ᚕinterfaceᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NonNullType_objectsNonNull(ctx context.Context, field graphql.CollectedField, obj *model.NonNullType) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "NonNullType",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ObjectsNonNull, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Object)
+	fc.Result = res
+	return ec.marshalNObject2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐObjectᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _NoopPayload_clientMutationId(ctx context.Context, field graphql.CollectedField, obj *model.NoopPayload) (ret graphql.Marshaler) {
@@ -1294,7 +1532,7 @@ func (ec *executionContext) _NullableType_id(ctx context.Context, field graphql.
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _NullableType_strNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
+func (ec *executionContext) _NullableType_stringNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1311,7 +1549,7 @@ func (ec *executionContext) _NullableType_strNullable(ctx context.Context, field
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.StrNullable, nil
+		return obj.StringNullable, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1604,7 +1842,7 @@ func (ec *executionContext) _NullableType_anyNullable(ctx context.Context, field
 	return ec.marshalOAny2interface(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _NullableType_someTypeNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
+func (ec *executionContext) _NullableType_yesNoNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1621,7 +1859,7 @@ func (ec *executionContext) _NullableType_someTypeNullable(ctx context.Context, 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SomeTypeNullable, nil
+		return obj.YesNoNullable, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1630,12 +1868,12 @@ func (ec *executionContext) _NullableType_someTypeNullable(ctx context.Context, 
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.SomeType)
+	res := resTmp.(*model.YesNo)
 	fc.Result = res
-	return ec.marshalOSomeType2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSomeType(ctx, field.Selections, res)
+	return ec.marshalOYesNo2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐYesNo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _NullableType_someTypesArrayNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
+func (ec *executionContext) _NullableType_objectNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1652,7 +1890,7 @@ func (ec *executionContext) _NullableType_someTypesArrayNullable(ctx context.Con
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SomeTypesArrayNullable, nil
+		return obj.ObjectNullable, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1661,12 +1899,12 @@ func (ec *executionContext) _NullableType_someTypesArrayNullable(ctx context.Con
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.SomeType)
+	res := resTmp.(*model.Object)
 	fc.Result = res
-	return ec.marshalOSomeType2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSomeTypeᚄ(ctx, field.Selections, res)
+	return ec.marshalOObject2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐObject(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _NullableType_someTypesObjectNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
+func (ec *executionContext) _NullableType_stringsNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1683,7 +1921,38 @@ func (ec *executionContext) _NullableType_someTypesObjectNullable(ctx context.Co
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SomeTypesObjectNullable, nil
+		return obj.StringsNullable, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*string)
+	fc.Result = res
+	return ec.marshalOString2ᚕᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NullableType_stringsObjectNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "NullableType",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StringsObjectNullable, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1695,12 +1964,12 @@ func (ec *executionContext) _NullableType_someTypesObjectNullable(ctx context.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.SomeType)
+	res := resTmp.([]*string)
 	fc.Result = res
-	return ec.marshalNSomeType2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSomeType(ctx, field.Selections, res)
+	return ec.marshalNString2ᚕᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _NullableType_someTypesNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
+func (ec *executionContext) _NullableType_stringsArrayNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1717,7 +1986,7 @@ func (ec *executionContext) _NullableType_someTypesNullable(ctx context.Context,
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SomeTypesNullable, nil
+		return obj.StringsArrayNullable, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1726,12 +1995,12 @@ func (ec *executionContext) _NullableType_someTypesNullable(ctx context.Context,
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.SomeType)
+	res := resTmp.([]string)
 	fc.Result = res
-	return ec.marshalOSomeType2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSomeType(ctx, field.Selections, res)
+	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _NullableType_customScalarNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
+func (ec *executionContext) _NullableType_mapsNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1748,7 +2017,7 @@ func (ec *executionContext) _NullableType_customScalarNullable(ctx context.Conte
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.CustomScalarNullable, nil
+		return obj.MapsNullable, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1757,9 +2026,300 @@ func (ec *executionContext) _NullableType_customScalarNullable(ctx context.Conte
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.CustomScalar)
+	res := resTmp.([]map[string]interface{})
 	fc.Result = res
-	return ec.marshalOCustomScalar2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐCustomScalar(ctx, field.Selections, res)
+	return ec.marshalOMap2ᚕmap(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NullableType_mapsObjectNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "NullableType",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MapsObjectNullable, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]map[string]interface{})
+	fc.Result = res
+	return ec.marshalNMap2ᚕmap(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NullableType_mapsArrayNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "NullableType",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MapsArrayNullable, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]map[string]interface{})
+	fc.Result = res
+	return ec.marshalOMap2ᚕmapᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NullableType_anyTypesNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "NullableType",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AnyTypesNullable, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]interface{})
+	fc.Result = res
+	return ec.marshalOAny2ᚕinterface(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NullableType_anyTypesObjectNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "NullableType",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AnyTypesObjectNullable, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]interface{})
+	fc.Result = res
+	return ec.marshalNAny2ᚕinterface(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NullableType_anyTypesArrayNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "NullableType",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AnyTypesArrayNullable, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]interface{})
+	fc.Result = res
+	return ec.marshalOAny2ᚕinterfaceᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NullableType_objectsNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "NullableType",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ObjectsNullable, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Object)
+	fc.Result = res
+	return ec.marshalOObject2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐObject(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NullableType_objectsObjectNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "NullableType",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ObjectsObjectNullable, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Object)
+	fc.Result = res
+	return ec.marshalNObject2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐObject(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NullableType_objectsArrayNullable(ctx context.Context, field graphql.CollectedField, obj *model.NullableType) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "NullableType",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ObjectsArrayNullable, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Object)
+	fc.Result = res
+	return ec.marshalOObject2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐObjectᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Object_id(ctx context.Context, field graphql.CollectedField, obj *model.Object) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Object",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_node(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1834,6 +2394,40 @@ func (ec *executionContext) _Query_nonNullTypes(ctx context.Context, field graph
 	return ec.marshalNNonNullType2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐNonNullTypeᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_nullableTypes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().NullableTypes(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.NullableType)
+	fc.Result = res
+	return ec.marshalNNullableType2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐNullableTypeᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1901,40 +2495,6 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	res := resTmp.(*introspection.Schema)
 	fc.Result = res
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _SomeType_id(ctx context.Context, field graphql.CollectedField, obj *model.SomeType) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "SomeType",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -3032,13 +3592,13 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._NullableType(ctx, sel, obj)
-	case model.SomeType:
-		return ec._SomeType(ctx, sel, &obj)
-	case *model.SomeType:
+	case model.Object:
+		return ec._Object(ctx, sel, &obj)
+	case *model.Object:
 		if obj == nil {
 			return graphql.Null
 		}
-		return ec._SomeType(ctx, sel, obj)
+		return ec._Object(ctx, sel, obj)
 	default:
 		panic(fmt.Errorf("unexpected type %T", obj))
 	}
@@ -3116,8 +3676,8 @@ func (ec *executionContext) _NonNullType(ctx context.Context, sel ast.SelectionS
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "strNonNull":
-			out.Values[i] = ec._NonNullType_strNonNull(ctx, field, obj)
+		case "stringNonNull":
+			out.Values[i] = ec._NonNullType_stringNonNull(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -3166,18 +3726,33 @@ func (ec *executionContext) _NonNullType(ctx context.Context, sel ast.SelectionS
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "someTypeNonNull":
-			out.Values[i] = ec._NonNullType_someTypeNonNull(ctx, field, obj)
+		case "yesNoNonNull":
+			out.Values[i] = ec._NonNullType_yesNoNonNull(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "someTypesNonNull":
-			out.Values[i] = ec._NonNullType_someTypesNonNull(ctx, field, obj)
+		case "objectNonNull":
+			out.Values[i] = ec._NonNullType_objectNonNull(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "customScalarNonNull":
-			out.Values[i] = ec._NonNullType_customScalarNonNull(ctx, field, obj)
+		case "stringsNonNull":
+			out.Values[i] = ec._NonNullType_stringsNonNull(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "mapsNonNull":
+			out.Values[i] = ec._NonNullType_mapsNonNull(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "anyTypesNonNull":
+			out.Values[i] = ec._NonNullType_anyTypesNonNull(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "objectsNonNull":
+			out.Values[i] = ec._NonNullType_objectsNonNull(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -3232,8 +3807,8 @@ func (ec *executionContext) _NullableType(ctx context.Context, sel ast.Selection
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "strNullable":
-			out.Values[i] = ec._NullableType_strNullable(ctx, field, obj)
+		case "stringNullable":
+			out.Values[i] = ec._NullableType_stringNullable(ctx, field, obj)
 		case "intNullable":
 			out.Values[i] = ec._NullableType_intNullable(ctx, field, obj)
 		case "floatNullable":
@@ -3252,19 +3827,73 @@ func (ec *executionContext) _NullableType(ctx context.Context, sel ast.Selection
 			out.Values[i] = ec._NullableType_uploadNullable(ctx, field, obj)
 		case "anyNullable":
 			out.Values[i] = ec._NullableType_anyNullable(ctx, field, obj)
-		case "someTypeNullable":
-			out.Values[i] = ec._NullableType_someTypeNullable(ctx, field, obj)
-		case "someTypesArrayNullable":
-			out.Values[i] = ec._NullableType_someTypesArrayNullable(ctx, field, obj)
-		case "someTypesObjectNullable":
-			out.Values[i] = ec._NullableType_someTypesObjectNullable(ctx, field, obj)
+		case "yesNoNullable":
+			out.Values[i] = ec._NullableType_yesNoNullable(ctx, field, obj)
+		case "objectNullable":
+			out.Values[i] = ec._NullableType_objectNullable(ctx, field, obj)
+		case "stringsNullable":
+			out.Values[i] = ec._NullableType_stringsNullable(ctx, field, obj)
+		case "stringsObjectNullable":
+			out.Values[i] = ec._NullableType_stringsObjectNullable(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "someTypesNullable":
-			out.Values[i] = ec._NullableType_someTypesNullable(ctx, field, obj)
-		case "customScalarNullable":
-			out.Values[i] = ec._NullableType_customScalarNullable(ctx, field, obj)
+		case "stringsArrayNullable":
+			out.Values[i] = ec._NullableType_stringsArrayNullable(ctx, field, obj)
+		case "mapsNullable":
+			out.Values[i] = ec._NullableType_mapsNullable(ctx, field, obj)
+		case "mapsObjectNullable":
+			out.Values[i] = ec._NullableType_mapsObjectNullable(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "mapsArrayNullable":
+			out.Values[i] = ec._NullableType_mapsArrayNullable(ctx, field, obj)
+		case "anyTypesNullable":
+			out.Values[i] = ec._NullableType_anyTypesNullable(ctx, field, obj)
+		case "anyTypesObjectNullable":
+			out.Values[i] = ec._NullableType_anyTypesObjectNullable(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "anyTypesArrayNullable":
+			out.Values[i] = ec._NullableType_anyTypesArrayNullable(ctx, field, obj)
+		case "objectsNullable":
+			out.Values[i] = ec._NullableType_objectsNullable(ctx, field, obj)
+		case "objectsObjectNullable":
+			out.Values[i] = ec._NullableType_objectsObjectNullable(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "objectsArrayNullable":
+			out.Values[i] = ec._NullableType_objectsArrayNullable(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var objectImplementors = []string{"Object", "Node"}
+
+func (ec *executionContext) _Object(ctx context.Context, sel ast.SelectionSet, obj *model.Object) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, objectImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Object")
+		case "id":
+			out.Values[i] = ec._Object_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3316,37 +3945,24 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
+		case "nullableTypes":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_nullableTypes(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "__type":
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
 			out.Values[i] = ec._Query___schema(ctx, field)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var someTypeImplementors = []string{"SomeType", "Node"}
-
-func (ec *executionContext) _SomeType(ctx context.Context, sel ast.SelectionSet, obj *model.SomeType) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, someTypeImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("SomeType")
-		case "id":
-			out.Values[i] = ec._SomeType_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3626,6 +4242,64 @@ func (ec *executionContext) marshalNAny2interface(ctx context.Context, sel ast.S
 	return res
 }
 
+func (ec *executionContext) unmarshalNAny2ᚕinterface(ctx context.Context, v interface{}) ([]interface{}, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]interface{}, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalOAny2interface(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNAny2ᚕinterface(ctx context.Context, sel ast.SelectionSet, v []interface{}) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalOAny2interface(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalNAny2ᚕinterfaceᚄ(ctx context.Context, v interface{}) ([]interface{}, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]interface{}, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalNAny2interface(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNAny2ᚕinterfaceᚄ(ctx context.Context, sel ast.SelectionSet, v []interface{}) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNAny2interface(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	return graphql.UnmarshalBoolean(v)
 }
@@ -3638,15 +4312,6 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) unmarshalNCustomScalar2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐCustomScalar(ctx context.Context, v interface{}) (model.CustomScalar, error) {
-	var res model.CustomScalar
-	return res, res.UnmarshalGQL(v)
-}
-
-func (ec *executionContext) marshalNCustomScalar2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐCustomScalar(ctx context.Context, sel ast.SelectionSet, v model.CustomScalar) graphql.Marshaler {
-	return v
 }
 
 func (ec *executionContext) unmarshalNDate2string(ctx context.Context, v interface{}) (string, error) {
@@ -3728,6 +4393,64 @@ func (ec *executionContext) marshalNMap2map(ctx context.Context, sel ast.Selecti
 	return res
 }
 
+func (ec *executionContext) unmarshalNMap2ᚕmap(ctx context.Context, v interface{}) ([]map[string]interface{}, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]map[string]interface{}, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalOMap2map(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNMap2ᚕmap(ctx context.Context, sel ast.SelectionSet, v []map[string]interface{}) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalOMap2map(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalNMap2ᚕmapᚄ(ctx context.Context, v interface{}) ([]map[string]interface{}, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]map[string]interface{}, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalNMap2map(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNMap2ᚕmapᚄ(ctx context.Context, sel ast.SelectionSet, v []map[string]interface{}) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNMap2map(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalNNonNullType2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐNonNullType(ctx context.Context, sel ast.SelectionSet, v model.NonNullType) graphql.Marshaler {
 	return ec._NonNullType(ctx, sel, &v)
 }
@@ -3779,6 +4502,145 @@ func (ec *executionContext) marshalNNonNullType2ᚖgithubᚗcomᚋsky0621ᚋstud
 	return ec._NonNullType(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNNullableType2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐNullableType(ctx context.Context, sel ast.SelectionSet, v model.NullableType) graphql.Marshaler {
+	return ec._NullableType(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNullableType2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐNullableTypeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.NullableType) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNNullableType2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐNullableType(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNNullableType2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐNullableType(ctx context.Context, sel ast.SelectionSet, v *model.NullableType) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._NullableType(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNObject2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐObject(ctx context.Context, sel ast.SelectionSet, v model.Object) graphql.Marshaler {
+	return ec._Object(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNObject2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐObject(ctx context.Context, sel ast.SelectionSet, v []*model.Object) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOObject2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐObject(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNObject2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐObjectᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Object) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNObject2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐObject(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNObject2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐObject(ctx context.Context, sel ast.SelectionSet, v *model.Object) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Object(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNSignal2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSignal(ctx context.Context, v interface{}) (model.Signal, error) {
 	var res model.Signal
 	return res, res.UnmarshalGQL(v)
@@ -3786,94 +4648,6 @@ func (ec *executionContext) unmarshalNSignal2githubᚗcomᚋsky0621ᚋstudyᚑgq
 
 func (ec *executionContext) marshalNSignal2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSignal(ctx context.Context, sel ast.SelectionSet, v model.Signal) graphql.Marshaler {
 	return v
-}
-
-func (ec *executionContext) marshalNSomeType2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSomeType(ctx context.Context, sel ast.SelectionSet, v model.SomeType) graphql.Marshaler {
-	return ec._SomeType(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNSomeType2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSomeType(ctx context.Context, sel ast.SelectionSet, v []*model.SomeType) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalOSomeType2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSomeType(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) marshalNSomeType2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSomeTypeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SomeType) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNSomeType2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSomeType(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) marshalNSomeType2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSomeType(ctx context.Context, sel ast.SelectionSet, v *model.SomeType) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._SomeType(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -3888,6 +4662,64 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalNString2ᚕᚖstring(ctx context.Context, v interface{}) ([]*string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*string, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalOString2ᚖstring(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNString2ᚕᚖstring(ctx context.Context, sel ast.SelectionSet, v []*string) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalOString2ᚖstring(ctx, sel, v[i])
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
@@ -3916,6 +4748,15 @@ func (ec *executionContext) marshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋg
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNYesNo2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐYesNo(ctx context.Context, v interface{}) (model.YesNo, error) {
+	var res model.YesNo
+	return res, res.UnmarshalGQL(v)
+}
+
+func (ec *executionContext) marshalNYesNo2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐYesNo(ctx context.Context, sel ast.SelectionSet, v model.YesNo) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
@@ -4158,6 +4999,70 @@ func (ec *executionContext) marshalOAny2interface(ctx context.Context, sel ast.S
 	return graphql.MarshalAny(v)
 }
 
+func (ec *executionContext) unmarshalOAny2ᚕinterface(ctx context.Context, v interface{}) ([]interface{}, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]interface{}, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalOAny2interface(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOAny2ᚕinterface(ctx context.Context, sel ast.SelectionSet, v []interface{}) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalOAny2interface(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalOAny2ᚕinterfaceᚄ(ctx context.Context, v interface{}) ([]interface{}, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]interface{}, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalNAny2interface(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOAny2ᚕinterfaceᚄ(ctx context.Context, sel ast.SelectionSet, v []interface{}) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNAny2interface(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	return graphql.UnmarshalBoolean(v)
 }
@@ -4179,30 +5084,6 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	return ec.marshalOBoolean2bool(ctx, sel, *v)
-}
-
-func (ec *executionContext) unmarshalOCustomScalar2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐCustomScalar(ctx context.Context, v interface{}) (model.CustomScalar, error) {
-	var res model.CustomScalar
-	return res, res.UnmarshalGQL(v)
-}
-
-func (ec *executionContext) marshalOCustomScalar2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐCustomScalar(ctx context.Context, sel ast.SelectionSet, v model.CustomScalar) graphql.Marshaler {
-	return v
-}
-
-func (ec *executionContext) unmarshalOCustomScalar2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐCustomScalar(ctx context.Context, v interface{}) (*model.CustomScalar, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalOCustomScalar2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐCustomScalar(ctx, v)
-	return &res, err
-}
-
-func (ec *executionContext) marshalOCustomScalar2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐCustomScalar(ctx context.Context, sel ast.SelectionSet, v *model.CustomScalar) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return v
 }
 
 func (ec *executionContext) unmarshalODate2string(ctx context.Context, v interface{}) (string, error) {
@@ -4311,6 +5192,70 @@ func (ec *executionContext) marshalOMap2map(ctx context.Context, sel ast.Selecti
 	return graphql.MarshalMap(v)
 }
 
+func (ec *executionContext) unmarshalOMap2ᚕmap(ctx context.Context, v interface{}) ([]map[string]interface{}, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]map[string]interface{}, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalOMap2map(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOMap2ᚕmap(ctx context.Context, sel ast.SelectionSet, v []map[string]interface{}) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalOMap2map(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalOMap2ᚕmapᚄ(ctx context.Context, v interface{}) ([]map[string]interface{}, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]map[string]interface{}, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalNMap2map(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOMap2ᚕmapᚄ(ctx context.Context, sel ast.SelectionSet, v []map[string]interface{}) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNMap2map(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalONode2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐNode(ctx context.Context, sel ast.SelectionSet, v model.Node) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -4341,6 +5286,97 @@ func (ec *executionContext) marshalONoopPayload2ᚖgithubᚗcomᚋsky0621ᚋstud
 	return ec._NoopPayload(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalOObject2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐObject(ctx context.Context, sel ast.SelectionSet, v model.Object) graphql.Marshaler {
+	return ec._Object(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOObject2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐObject(ctx context.Context, sel ast.SelectionSet, v []*model.Object) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOObject2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐObject(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOObject2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐObjectᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Object) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNObject2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐObject(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOObject2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐObject(ctx context.Context, sel ast.SelectionSet, v *model.Object) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Object(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalOSignal2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSignal(ctx context.Context, v interface{}) (model.Signal, error) {
 	var res model.Signal
 	return res, res.UnmarshalGQL(v)
@@ -4365,103 +5401,76 @@ func (ec *executionContext) marshalOSignal2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑg
 	return v
 }
 
-func (ec *executionContext) marshalOSomeType2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSomeType(ctx context.Context, sel ast.SelectionSet, v model.SomeType) graphql.Marshaler {
-	return ec._SomeType(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalOSomeType2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSomeType(ctx context.Context, sel ast.SelectionSet, v []*model.SomeType) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalOSomeType2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSomeType(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) marshalOSomeType2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSomeTypeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SomeType) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNSomeType2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSomeType(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) marshalOSomeType2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐSomeType(ctx context.Context, sel ast.SelectionSet, v *model.SomeType) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._SomeType(ctx, sel, v)
-}
-
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
 	return graphql.UnmarshalString(v)
 }
 
 func (ec *executionContext) marshalOString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	return graphql.MarshalString(v)
+}
+
+func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalOString2ᚕᚖstring(ctx context.Context, v interface{}) ([]*string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*string, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalOString2ᚖstring(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOString2ᚕᚖstring(ctx context.Context, sel ast.SelectionSet, v []*string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalOString2ᚖstring(ctx, sel, v[i])
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
@@ -4523,6 +5532,30 @@ func (ec *executionContext) marshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgen�
 		return graphql.Null
 	}
 	return ec.marshalOUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, sel, *v)
+}
+
+func (ec *executionContext) unmarshalOYesNo2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐYesNo(ctx context.Context, v interface{}) (model.YesNo, error) {
+	var res model.YesNo
+	return res, res.UnmarshalGQL(v)
+}
+
+func (ec *executionContext) marshalOYesNo2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐYesNo(ctx context.Context, sel ast.SelectionSet, v model.YesNo) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalOYesNo2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐYesNo(ctx context.Context, v interface{}) (*model.YesNo, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOYesNo2githubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐYesNo(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) marshalOYesNo2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋtypesᚋgraphᚋmodelᚐYesNo(ctx context.Context, sel ast.SelectionSet, v *model.YesNo) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

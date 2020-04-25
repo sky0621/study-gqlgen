@@ -13,3 +13,7 @@ import (
 func (r *queryResolver) NonNullTypes(ctx context.Context) ([]*model.NonNullType, error) {
 	panic(fmt.Errorf("not implemented"))
 }
+
+func (r *queryResolver) NullableTypes(ctx context.Context) ([]*model.NullableType, error) {
+	panic(fmt.Errorf("not implemented"))
+}
