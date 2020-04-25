@@ -647,7 +647,7 @@ type NonNullType implements Node {
     "カスタムScalar型 - YesNo!"
     yesNoNonNull: YesNo!
 
-    "Object構造型 - SomeType!"
+    "Object構造型 - Object!"
     objectNonNull: Object!
 
     "文字列型配列 - [String!]!"
@@ -659,7 +659,7 @@ type NonNullType implements Node {
     "なんでもあり型配列 - [Any!]!"
     anyTypesNonNull: [Any!]!
 
-    "Object構造型配列 - [SomeType!]!"
+    "Object構造型配列 - [Object!]!"
     objectsNonNull: [Object!]!
 }
 
@@ -700,7 +700,7 @@ type NullableType implements Node {
     "カスタムScalar型 - YesNo"
     yesNoNullable: YesNo
 
-    "Object構造型 - SomeType"
+    "Object構造型 - Object"
     objectNullable: Object
 
     "文字列型配列 - [String]"
@@ -724,11 +724,11 @@ type NullableType implements Node {
     "なんでもあり型配列 - [Any!]"
     anyTypesArrayNullable: [Any!]
 
-    "Object構造型配列 - [SomeType]"
+    "Object構造型配列 - [Object]"
     objectsNullable: [Object]
-    "Object構造型配列 - [SomeType]!"
+    "Object構造型配列 - [Object]!"
     objectsObjectNullable: [Object]!
-    "Object構造型配列 - [SomeType!]"
+    "Object構造型配列 - [Object!]"
     objectsArrayNullable: [Object!]
 }
 

@@ -46,7 +46,7 @@ type NonNullType struct {
 	AnyNonNull interface{} `json:"anyNonNull"`
 	// カスタムScalar型 - YesNo!
 	YesNoNonNull YesNo `json:"yesNoNonNull"`
-	// Object構造型 - SomeType!
+	// Object構造型 - Object!
 	ObjectNonNull *Object `json:"objectNonNull"`
 	// 文字列型配列 - [String!]!
 	StringsNonNull []string `json:"stringsNonNull"`
@@ -54,7 +54,7 @@ type NonNullType struct {
 	MapsNonNull []map[string]interface{} `json:"mapsNonNull"`
 	// なんでもあり型配列 - [Any!]!
 	AnyTypesNonNull []interface{} `json:"anyTypesNonNull"`
-	// Object構造型配列 - [SomeType!]!
+	// Object構造型配列 - [Object!]!
 	ObjectsNonNull []*Object `json:"objectsNonNull"`
 }
 
@@ -93,7 +93,7 @@ type NullableType struct {
 	AnyNullable interface{} `json:"anyNullable"`
 	// カスタムScalar型 - YesNo
 	YesNoNullable *YesNo `json:"yesNoNullable"`
-	// Object構造型 - SomeType
+	// Object構造型 - Object
 	ObjectNullable *Object `json:"objectNullable"`
 	// 文字列型配列 - [String]
 	StringsNullable []*string `json:"stringsNullable"`
@@ -113,11 +113,11 @@ type NullableType struct {
 	AnyTypesObjectNullable []interface{} `json:"anyTypesObjectNullable"`
 	// なんでもあり型配列 - [Any!]
 	AnyTypesArrayNullable []interface{} `json:"anyTypesArrayNullable"`
-	// Object構造型配列 - [SomeType]
+	// Object構造型配列 - [Object]
 	ObjectsNullable []*Object `json:"objectsNullable"`
-	// Object構造型配列 - [SomeType]!
+	// Object構造型配列 - [Object]!
 	ObjectsObjectNullable []*Object `json:"objectsObjectNullable"`
-	// Object構造型配列 - [SomeType!]
+	// Object構造型配列 - [Object!]
 	ObjectsArrayNullable []*Object `json:"objectsArrayNullable"`
 }
 

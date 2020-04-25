@@ -11,9 +11,17 @@ import (
 )
 
 func (r *queryResolver) NonNullTypes(ctx context.Context) ([]*model.NonNullType, error) {
+	var results []*model.NonNullType
+	results = append(results, &model.NonNullType{
+		MapsNonNull:     []map[string]interface{}{nil},
+		AnyTypesNonNull: []interface{}{nil},
+		ObjectsNonNull:  []*model.Object{nil},
+	})
 	panic(fmt.Errorf("not implemented"))
 }
 
 func (r *queryResolver) NullableTypes(ctx context.Context) ([]*model.NullableType, error) {
+	var results []*model.NullableType
+	results = append(results, &model.NullableType{})
 	panic(fmt.Errorf("not implemented"))
 }
