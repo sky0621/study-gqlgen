@@ -12,7 +12,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	"github.com/sky0621/study-gqlgen/errorhandling/graph/model"
+	"github.com/sky0621/study-gqlgen/errorhandling2/graph/model"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -43,13 +43,8 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Query struct {
-		CustomErrorReturn  func(childComplexity int) int
-		CustomErrorReturn2 func(childComplexity int) int
-		CustomErrorReturn3 func(childComplexity int) int
-		CustomErrorReturn4 func(childComplexity int) int
-		ErrorReturn        func(childComplexity int) int
-		NormalReturn       func(childComplexity int) int
-		PanicReturn        func(childComplexity int) int
+		ErrorPresenter func(childComplexity int) int
+		PanicHandler   func(childComplexity int) int
 	}
 
 	Todo struct {
@@ -59,13 +54,8 @@ type ComplexityRoot struct {
 }
 
 type QueryResolver interface {
-	NormalReturn(ctx context.Context) ([]*model.Todo, error)
-	ErrorReturn(ctx context.Context) ([]*model.Todo, error)
-	CustomErrorReturn(ctx context.Context) ([]*model.Todo, error)
-	CustomErrorReturn2(ctx context.Context) ([]*model.Todo, error)
-	CustomErrorReturn3(ctx context.Context) ([]*model.Todo, error)
-	CustomErrorReturn4(ctx context.Context) ([]*model.Todo, error)
-	PanicReturn(ctx context.Context) ([]*model.Todo, error)
+	ErrorPresenter(ctx context.Context) ([]*model.Todo, error)
+	PanicHandler(ctx context.Context) ([]*model.Todo, error)
 }
 
 type executableSchema struct {
@@ -83,54 +73,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "Query.customErrorReturn":
-		if e.complexity.Query.CustomErrorReturn == nil {
+	case "Query.errorPresenter":
+		if e.complexity.Query.ErrorPresenter == nil {
 			break
 		}
 
-		return e.complexity.Query.CustomErrorReturn(childComplexity), true
+		return e.complexity.Query.ErrorPresenter(childComplexity), true
 
-	case "Query.customErrorReturn2":
-		if e.complexity.Query.CustomErrorReturn2 == nil {
+	case "Query.panicHandler":
+		if e.complexity.Query.PanicHandler == nil {
 			break
 		}
 
-		return e.complexity.Query.CustomErrorReturn2(childComplexity), true
-
-	case "Query.customErrorReturn3":
-		if e.complexity.Query.CustomErrorReturn3 == nil {
-			break
-		}
-
-		return e.complexity.Query.CustomErrorReturn3(childComplexity), true
-
-	case "Query.customErrorReturn4":
-		if e.complexity.Query.CustomErrorReturn4 == nil {
-			break
-		}
-
-		return e.complexity.Query.CustomErrorReturn4(childComplexity), true
-
-	case "Query.errorReturn":
-		if e.complexity.Query.ErrorReturn == nil {
-			break
-		}
-
-		return e.complexity.Query.ErrorReturn(childComplexity), true
-
-	case "Query.normalReturn":
-		if e.complexity.Query.NormalReturn == nil {
-			break
-		}
-
-		return e.complexity.Query.NormalReturn(childComplexity), true
-
-	case "Query.panicReturn":
-		if e.complexity.Query.PanicReturn == nil {
-			break
-		}
-
-		return e.complexity.Query.PanicReturn(childComplexity), true
+		return e.complexity.Query.PanicHandler(childComplexity), true
 
 	case "Todo.id":
 		if e.complexity.Todo.ID == nil {
@@ -197,13 +152,8 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 
 var sources = []*ast.Source{
 	{Name: "graph/schema.graphqls", Input: `type Query {
-  normalReturn: [Todo!]!
-  errorReturn: [Todo!]!
-  customErrorReturn: [Todo!]!
-  customErrorReturn2: [Todo!]!
-  customErrorReturn3: [Todo!]!
-  customErrorReturn4: [Todo!]!
-  panicReturn: [Todo!]!
+  errorPresenter: [Todo!]!
+  panicHandler: [Todo!]!
 }
 
 type Todo {
@@ -271,7 +221,7 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Query_normalReturn(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_errorPresenter(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -289,7 +239,7 @@ func (ec *executionContext) _Query_normalReturn(ctx context.Context, field graph
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().NormalReturn(rctx)
+		return ec.resolvers.Query().ErrorPresenter(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -303,10 +253,10 @@ func (ec *executionContext) _Query_normalReturn(ctx context.Context, field graph
 	}
 	res := resTmp.([]*model.Todo)
 	fc.Result = res
-	return ec.marshalNTodo2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋerrorhandlingᚋgraphᚋmodelᚐTodoᚄ(ctx, field.Selections, res)
+	return ec.marshalNTodo2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋerrorhandling2ᚋgraphᚋmodelᚐTodoᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_errorReturn(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_panicHandler(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -324,7 +274,7 @@ func (ec *executionContext) _Query_errorReturn(ctx context.Context, field graphq
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ErrorReturn(rctx)
+		return ec.resolvers.Query().PanicHandler(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -338,182 +288,7 @@ func (ec *executionContext) _Query_errorReturn(ctx context.Context, field graphq
 	}
 	res := resTmp.([]*model.Todo)
 	fc.Result = res
-	return ec.marshalNTodo2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋerrorhandlingᚋgraphᚋmodelᚐTodoᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Query_customErrorReturn(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().CustomErrorReturn(rctx)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*model.Todo)
-	fc.Result = res
-	return ec.marshalNTodo2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋerrorhandlingᚋgraphᚋmodelᚐTodoᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Query_customErrorReturn2(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().CustomErrorReturn2(rctx)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*model.Todo)
-	fc.Result = res
-	return ec.marshalNTodo2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋerrorhandlingᚋgraphᚋmodelᚐTodoᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Query_customErrorReturn3(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().CustomErrorReturn3(rctx)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*model.Todo)
-	fc.Result = res
-	return ec.marshalNTodo2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋerrorhandlingᚋgraphᚋmodelᚐTodoᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Query_customErrorReturn4(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().CustomErrorReturn4(rctx)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*model.Todo)
-	fc.Result = res
-	return ec.marshalNTodo2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋerrorhandlingᚋgraphᚋmodelᚐTodoᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Query_panicReturn(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().PanicReturn(rctx)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*model.Todo)
-	fc.Result = res
-	return ec.marshalNTodo2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋerrorhandlingᚋgraphᚋmodelᚐTodoᚄ(ctx, field.Selections, res)
+	return ec.marshalNTodo2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋerrorhandling2ᚋgraphᚋmodelᚐTodoᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1767,7 +1542,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "normalReturn":
+		case "errorPresenter":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -1775,13 +1550,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_normalReturn(ctx, field)
+				res = ec._Query_errorPresenter(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "errorReturn":
+		case "panicHandler":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -1789,77 +1564,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_errorReturn(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
-		case "customErrorReturn":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_customErrorReturn(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
-		case "customErrorReturn2":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_customErrorReturn2(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
-		case "customErrorReturn3":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_customErrorReturn3(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
-		case "customErrorReturn4":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_customErrorReturn4(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
-		case "panicReturn":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_panicReturn(ctx, field)
+				res = ec._Query_panicHandler(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -2202,7 +1907,7 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNTodo2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋerrorhandlingᚋgraphᚋmodelᚐTodoᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Todo) graphql.Marshaler {
+func (ec *executionContext) marshalNTodo2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋerrorhandling2ᚋgraphᚋmodelᚐTodoᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Todo) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -2226,7 +1931,7 @@ func (ec *executionContext) marshalNTodo2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNTodo2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋerrorhandlingᚋgraphᚋmodelᚐTodo(ctx, sel, v[i])
+			ret[i] = ec.marshalNTodo2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋerrorhandling2ᚋgraphᚋmodelᚐTodo(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -2239,7 +1944,7 @@ func (ec *executionContext) marshalNTodo2ᚕᚖgithubᚗcomᚋsky0621ᚋstudyᚑ
 	return ret
 }
 
-func (ec *executionContext) marshalNTodo2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋerrorhandlingᚋgraphᚋmodelᚐTodo(ctx context.Context, sel ast.SelectionSet, v *model.Todo) graphql.Marshaler {
+func (ec *executionContext) marshalNTodo2ᚖgithubᚗcomᚋsky0621ᚋstudyᚑgqlgenᚋerrorhandling2ᚋgraphᚋmodelᚐTodo(ctx context.Context, sel ast.SelectionSet, v *model.Todo) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")

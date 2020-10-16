@@ -1,0 +1,9 @@
+type Query {
+  errorPresenter: [Todo!]!
+  panicHandler: [Todo!]!
+}
+
+type Todo {
+  id: ID!
+  text: String!
+}

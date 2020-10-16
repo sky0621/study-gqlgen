@@ -1,6 +1,10 @@
 type Query {
   normalReturn: [Todo!]!
   errorReturn: [Todo!]!
+  customErrorReturn: [Todo!]!
+  customErrorReturn2: [Todo!]!
+  customErrorReturn3: [Todo!]!
+  customErrorReturn4: [Todo!]!
   panicReturn: [Todo!]!
 }
 
