@@ -1,0 +1,10 @@
+type Query {
+  normalReturn: [Todo!]!
+  errorReturn: [Todo!]!
+  panicReturn: [Todo!]!
+}
+
+type Todo {
+  id: ID!
+  text: String!
+}
