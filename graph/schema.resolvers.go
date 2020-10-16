@@ -7,15 +7,15 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/sky0621/study-gqlgen/types/graph/generated"
-	"github.com/sky0621/study-gqlgen/types/graph/model"
+	"github.com/sky0621/study-gqlgen/graph/generated"
+	"github.com/sky0621/study-gqlgen/graph/model"
 )
 
-func (r *mutationResolver) Noop(ctx context.Context, input *model.NoopInput) (*model.NoopPayload, error) {
+func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *queryResolver) Node(ctx context.Context, id string) (model.Node, error) {
+func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
