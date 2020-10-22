@@ -13,15 +13,19 @@ import (
 )
 
 func main() {
+	db := sqlx.MustOpen("sqlite3", "./data.db")
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", handler.NewDefaultServer(
-		generated.NewExecutableSchema(
-			generated.Config{
-				Resolvers: &graph.Resolver{
-					DB: sqlx.MustOpen("sqlite3", "./data.db"),
+	http.Handle("/query", graph.Middleware(
+		db,
+		handler.NewDefaultServer(
+			generated.NewExecutableSchema(
+				generated.Config{
+					Resolvers: &graph.Resolver{
+						DB: db,
+					},
 				},
-			},
-		),
-	))
+			),
+		)),
+	)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
